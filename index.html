@@ -247,8 +247,8 @@ function animateRoute(route) {
         marker.setIcon(blinkingIcon);
 
         setTimeout(() => {
-          marker.bindPopup("Delivery blocked near Shalimar Tempe due to road closure.").openPopup();
-          updateStatus("Status: Delivery blocked near Shalimar Tempe due to road closure.", 'blocked');
+          marker.bindPopup("Delay in delivery due to unpaid additional storage fees.").openPopup();
+          updateStatus("Status: Delay in delivery due to unpaid additional storage fees.", 'blocked');
         }, 3000);
 
         return; // Stop animation
@@ -289,7 +289,7 @@ function trackPackage() {
       ],
       vehicleType: "White Delivery Van",
       packageName: "Robert Rudy",
-      packageDestination: "16735 w McKinley St. Goodyear, AZ 85338",
+      packageDestination: "W McKinley St, Goodyear, AZ 85338",
       vehicleImage: "images/truck.png",
       driverName: "Dennis Ruben",
       experience: "6 years",
