@@ -81,7 +81,7 @@
   }
 
   .status-in-transit {
-  background: rgba(144, 238, 144, 0.5); /* greenish */
+  background: rgba(34, 236, 34, 0.5); /* greenish */
   color: white;
 }
 
@@ -228,12 +228,23 @@ function animateRoute(route) {
     marker.setLatLng(pos);
     traveledPolyline.setLatLngs(traveledCoords.concat([pos]));
 
+    // Update progress bar
+    const totalSegments = route.length - 1;
+    const segmentProgress = (i + t) / totalSegments;
+    const progressPercent = Math.round(segmentProgress * 100);
+    const progressBar = document.getElementById('progressBar');
+    if (progressBar) {
+      progressBar.style.width = progressPercent + '%';
+      progressBar.style.background = 'rgba(46,204,113,1)'; // green
+    }
+
     if (t < 1) {
       animationFrame = requestAnimationFrame(step);
     } else {
       traveledCoords.push(route[i + 1]);
       traveledPolyline.setLatLngs(traveledCoords);
 
+        // Zoom in when reaching the second to last segment
       if (route[i + 1][0] === 33.4343 && route[i + 1][1] === -112.0115) {
         const finalSegmentBounds = L.latLngBounds([
           [33.4343, -112.0115],
@@ -242,29 +253,15 @@ function animateRoute(route) {
         map.fitBounds(finalSegmentBounds, { padding: [50, 50] });
       }
 
-      if (route[i + 1][0] === 33.3996 && route[i + 1][1] === -111.8956) {
-        const blinkingIcon = L.divIcon({ className: 'blinking-dot' });
-        marker.setIcon(blinkingIcon);
 
-        setTimeout(() => {
-          marker.bindPopup("Delay in delivery due to unpaid additional storage fees.").openPopup();
-          updateStatus("Status: Delay in delivery due to unpaid additional storage fees.", 'blocked');
-        }, 3000);
-
-        return; // Stop animation
-      }
-
-      else if (route[i + 1][0] === 33.360355 && route[i + 1][1] === -111.801682) {
-        // Make progress bar full and green
-        document.getElementById('progressBar').style.width = '100%';
-        document.getElementById('progressBar').style.background = 'rgba(46, 204, 113, 1)';
-      
-        // Update status
-        updateStatus("Status: Package arrived at hub successfully.", 'in-transit');
-      
-        // Optional popup on marker
-        marker.bindPopup("Package arrived at hub successfully.").openPopup();
-      
+      // Final destination
+      if (route[i + 1][0] === 33.360355 && route[i + 1][1] === -111.801682) {
+        if (progressBar) {
+          progressBar.style.width = '100%';
+          progressBar.style.background = 'rgba(46,204,113,1)';
+        }
+        updateStatus("Status: Package arrived successfully.", 'in-transit');
+        marker.bindPopup("Package arrived successfully.").openPopup();
         return; // Stop animation
       }
 
@@ -285,6 +282,37 @@ function trackPackage() {
   if (animationFrame) cancelAnimationFrame(animationFrame);
   updateStatus("Status: Tracking in progress...", 'in-transit');
 
+  // Reset progress bar
+  let progressBar = document.getElementById('progressBar');
+  if (!progressBar) {
+    // Create if missing
+    const container = document.createElement('div');
+    container.id = 'progressBarContainer';
+    container.style.position = 'relative';
+    container.style.width = '100%';
+    container.style.height = '8px';
+    container.style.background = 'rgba(0,0,0,0.1)';
+    container.style.borderRadius = '4px';
+    container.style.marginTop = '8px';
+    container.style.overflow = 'hidden';
+
+    progressBar = document.createElement('div');
+    progressBar.id = 'progressBar';
+    progressBar.style.position = 'absolute';
+    progressBar.style.top = '0';
+    progressBar.style.left = '0';
+    progressBar.style.height = '100%';
+    progressBar.style.width = '0%';
+    progressBar.style.background = 'rgba(46,204,113,1)';
+    progressBar.style.transition = 'width 0.3s ease, background 0.3s ease';
+
+    container.appendChild(progressBar);
+    document.getElementById('statusBox').appendChild(container);
+  } else {
+    progressBar.style.width = '0%';
+    progressBar.style.background = 'rgba(46,204,113,1)';
+  }
+
   if (trackingNumber === "") {
     updateStatus("Status: Please enter a tracking number.");
     return;
@@ -293,7 +321,7 @@ function trackPackage() {
   const sampleData = {
     "DTD20234RX": {
       status: "In Transit",
-      expectedDelivery: "July 4, 2025",
+      expectedDelivery: "July 7, 2025",
       route: [
         [40.7580, -73.9851],
         [35.1495, -90.0490],
@@ -357,31 +385,9 @@ function updateStatus(text, statusType) {
 
   if (statusType === 'in-transit') {
     box.classList.add('status-in-transit');
-  } else if (statusType === 'blocked') {
-    box.classList.add('status-blocked');
   }
 }
 </script>
 
-<script>
-  // Background carousel
-  const images = [
-    "images/slide1.jpg",
-    "images/slide2.jpg",
-    "images/slide3.jpg",
-    "images/slide4.jpg"
-  ];
-  let currentIndex = 0;
-  function changeBackground() {
-    document.body.style.backgroundImage = `url('${images[currentIndex]}')`;
-    currentIndex = (currentIndex + 1) % images.length;
-  }
-  // Change every 6 seconds
-  setInterval(changeBackground, 6000);
-  // Initialize immediately
-  changeBackground();
-</script>
-
 </body>
 </html>
-
