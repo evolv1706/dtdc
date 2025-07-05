@@ -254,19 +254,19 @@ function animateRoute(route) {
         return; // Stop animation
       }
 
-      if (route[i + 1][0] === 33.360355 && route[i + 1][1] === -111.801682) {
-        // Reset progress bar to green
-        document.getElementById('progressBar').style.background = 'rgba(46, 204, 113, 1)'; // green
+      else if (route[i + 1][0] === 33.360355 && route[i + 1][1] === -111.801682) {
+        // Make progress bar full and green
+        document.getElementById('progressBar').style.width = '100%';
+        document.getElementById('progressBar').style.background = 'rgba(46, 204, 113, 1)';
       
         // Update status
         updateStatus("Status: Package arrived at hub successfully.", 'in-transit');
       
-        // Optionally, bind a popup or do anything else here
+        // Optional popup on marker
         marker.bindPopup("Package arrived at hub successfully.").openPopup();
       
         return; // Stop animation
       }
-
 
       i++;
       if (i < route.length - 1) {
